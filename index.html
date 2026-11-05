@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#10131d">
+<title>Aetherfall: The Last Spire</title>
+<style>
+:root{--bg:#10131d;--panel:#191f2d;--panel2:#20293a;--line:#344158;--gold:#e7bd6b;--text:#f3f0e8;--muted:#a7b0c2;--green:#80c9a1;--red:#e77f78;--blue:#83b7e8}
+*{box-sizing:border-box} body{margin:0;background:radial-gradient(ellipse at 50% -15%,#293651 0%,#151b29 42%,#0e1119 100%);color:var(--text);font:15px/1.45 system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh}
+button{font:inherit;color:inherit;border:1px solid var(--line);background:linear-gradient(180deg,#303d54,#222c3e);border-radius:12px;padding:10px 14px;cursor:pointer;transition:.15s}
+button:active{transform:scale(.98)}button:disabled{opacity:.42;cursor:not-allowed}
+button.primary{background:linear-gradient(180deg,#d6ad63,#9d7136);border-color:#f1ce8b;color:#1b1b20;font-weight:800}
+button.ghost{background:#171e2b}button.selected{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold) inset}
+.app{max-width:1120px;margin:auto;padding:16px;display:grid;gap:14px}
+header{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 4px}
+.brand{display:flex;align-items:center;gap:12px}.sigil{width:48px;height:48px;border-radius:15px;background:linear-gradient(145deg,#e6c27a,#6f4a27);display:grid;place-items:center;color:#1b1b20;font-size:26px;box-shadow:0 8px 28px #0006}
+h1{font-size:clamp(19px,3vw,27px);margin:0;letter-spacing:.03em}.subtitle{color:var(--muted);font-size:12px}
+.resources{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}.resource{background:#171e2b;border:1px solid var(--line);border-radius:12px;padding:8px 11px;font-size:13px;white-space:nowrap}.resource b{color:var(--gold);margin-left:4px}
+nav{display:flex;gap:8px;overflow:auto;padding-bottom:2px}nav button{white-space:nowrap;flex:1;min-width:max-content}nav button.active{border-color:var(--gold);background:#3a3429;color:#ffdda0}
+main{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(270px,.8fr);gap:14px}
+.panel{background:linear-gradient(145deg,#1c2433ee,#151b27ee);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:0 14px 36px #0003;min-width:0}
+.panel h2{margin:0 0 12px;font-size:18px}.muted{color:var(--muted)}.small{font-size:12px;color:var(--muted)}
+.hero-banner{min-height:190px;border-radius:15px;padding:20px;display:flex;flex-direction:column;justify-content:end;position:relative;overflow:hidden;background:linear-gradient(90deg,#121a2a 0%,#1a2941bb 48%,#17203388),radial-gradient(circle at 75% 25%,#9e7847 0,#4b4860 18%,#18243a 55%,#111724 100%)}
+.hero-banner:after{content:"✧";position:absolute;right:9%;top:-28px;font-size:190px;color:#f4d28a22;text-shadow:0 0 45px #f4d28a55}
+.eyebrow{color:var(--gold);text-transform:uppercase;letter-spacing:.16em;font-size:11px;font-weight:800}.hero-banner h2{font-size:27px;margin:5px 0}.hero-banner p{max-width:520px;color:#d2d7e1;margin:0}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}.stat{background:#141b28;border:1px solid #2e3b50;border-radius:12px;padding:10px}.stat b{display:block;font-size:18px;color:var(--gold)}
+.team-grid,.roster-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.unit{background:#151d2a;border:1px solid #344158;border-radius:14px;padding:11px;min-width:0;position:relative}
+.unit .portrait{font-size:31px;height:43px;display:flex;align-items:center}.unit h3{font-size:14px;margin:4px 0 1px}.unit .role{font-size:11px;color:var(--gold)}.unit .meta{font-size:11px;color:var(--muted);margin-top:6px}
+.unit .bar{height:5px;background:#30394b;border-radius:9px;overflow:hidden;margin-top:8px}.unit .bar i{display:block;height:100%;background:var(--green)}
+.unit .pick{position:absolute;right:8px;top:8px;border-radius:50%;width:24px;height:24px;padding:0;font-size:12px}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.actions button{flex:1}
+.battlefield{background:radial-gradient(ellipse at 50% 25%,#4a3b43 0,#252a3c 43%,#151c2b 100%);border:1px solid #46516a;border-radius:15px;padding:16px;min-height:210px}
+.combatants{display:grid;grid-template-columns:1fr 1fr;gap:12px}.side h3{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em}.fighter{display:flex;align-items:center;gap:9px;background:#111827aa;border:1px solid #53607866;border-radius:11px;padding:8px;margin:6px 0}.fighter .face{font-size:25px}.fighter b{font-size:12px}.hp{height:5px;background:#40485a;border-radius:8px;margin-top:4px;overflow:hidden}.hp i{display:block;height:100%;background:var(--green)}
+.log{height:112px;overflow:auto;background:#101621;border:1px solid #303c50;border-radius:12px;padding:10px;font-size:12px;color:#c5ccda;margin-top:10px}.log div{padding:2px 0}
+.list{display:grid;gap:8px}.rowitem{display:flex;align-items:center;gap:10px;background:#151d2a;border:1px solid #344158;border-radius:12px;padding:10px}.rowitem .grow{flex:1;min-width:0}.rowitem b{display:block;font-size:13px}.rowitem button{padding:7px 10px;font-size:12px}
+.hidden{display:none!important}.notice{padding:10px;border-radius:11px;background:#253244;border:1px solid #3b4b65;color:#d7dfed;font-size:12px;margin-top:10px}
+footer{text-align:center;color:#758096;font-size:11px;padding:6px}
+@media(max-width:760px){.app{padding:10px}header{align-items:flex-start;flex-direction:column}.resources{justify-content:flex-start}main{grid-template-columns:1fr}.team-grid,.roster-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hero-banner{min-height:165px}.hero-banner h2{font-size:23px}}
+@media(max-width:390px){.team-grid,.roster-grid{grid-template-columns:1fr 1fr}.panel{padding:12px}.resource{font-size:12px;padding:7px 8px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+ <div class="brand"><div class="sigil">✦</div><div><h1>AETHERFALL <span style="color:var(--gold)">·</span> THE LAST SPIRE</h1><div class="subtitle">A new mercenary expedition begins</div></div></div>
+ <div class="resources"><div class="resource">✧ Aether <b id="aether">0</b></div><div class="resource">◈ Crowns <b id="gold">0</b></div><div class="resource">⚔ Floor <b id="floor">1</b></div></div>
+</header>
+<nav id="nav">
+ <button class="active" data-tab="expedition">⚔ Expedition</button><button data-tab="mercenaries">♟ Mercenaries</button><button data-tab="camp">⌂ Camp</button>
+</nav>
+<main>
+<section class="panel" id="mainPanel">
+ <div id="expedition">
+  <div class="hero-banner"><div class="eyebrow">The Shattered Meridian</div><h2>Climb beyond the last light.</h2><p>The sky has fractured. An ancient spire has risen from the clouds, and its heart is calling. Gather your company and carve a path upward.</p></div>
+  <div class="stats"><div class="stat"><span class="small">Company power</span><b id="power">0</b></div><div class="stat"><span class="small">Victories</span><b id="wins">0</b></div><div class="stat"><span class="small">Best floor</span><b id="best">1</b></div></div>
+  <h2 style="margin-top:18px">Your company <span class="small">(choose up to 3)</span></h2>
+  <div class="team-grid" id="team"></div>
+  <div class="actions"><button class="primary" id="battleBtn">Begin expedition</button><button id="nextBtn" class="ghost" disabled>Next floor</button></div>
+  <div class="notice" id="battleNotice">Your mercenaries fight automatically. Victory earns Crowns and Aether.</div>
+ </div>
+ <div id="mercenaries" class="hidden">
+  <h2>Mercenary Hall</h2><p class="muted">Recruit a new ally to strengthen your company. Every recruit has a role and a distinct combat style.</p>
+  <div class="roster-grid" id="roster"></div>
+  <div class="actions"><button class="primary" id="recruitBtn">Recruit · 60 Crowns</button><button id="refreshBtn">Refresh offers · 15</button></div>
+  <div class="notice">Recruiting costs Crowns. New allies join your roster permanently.</div>
+ </div>
+ <div id="camp" class="hidden">
+  <h2>Wayfarer's Camp</h2><p class="muted">Spend your spoils to prepare for the climb.</p>
+  <div class="list">
+   <div class="rowitem"><div style="font-size:28px">⚒</div><div class="grow"><b>Weapon drills</b><span class="small">Permanently increase all mercenary attack by 2.</span></div><button id="trainBtn">Upgrade · <span id="trainCost">35</span></button></div>
+   <div class="rowitem"><div style="font-size:28px">🛡</div><div class="grow"><b>Fortified camp</b><span class="small">Permanently increase all mercenary health by 10.</span></div><button id="fortifyBtn">Upgrade · <span id="fortCost">35</span></button></div>
+   <div class="rowitem"><div style="font-size:28px">✧</div><div class="grow"><b>Aether study</b><span class="small">Convert Aether into Crowns for supplies.</span></div><button id="convertBtn">Trade 10 Aether</button></div>
+  </div>
+  <div class="notice">Camp upgrades apply to every current and future mercenary.</div>
+ </div>
+</section>
+<aside class="panel">
+ <h2>Expedition report</h2>
+ <div class="battlefield">
+  <div class="combatants"><div class="side"><h3>Your company</h3><div id="allyBattle"></div></div><div class="side"><h3>Opposition</h3><div id="enemyBattle"></div></div></div>
+ </div>
+ <div class="log" id="log"><div>The road to the Spire lies open.</div><div>Choose your company, then begin the expedition.</div></div>
+ <div class="stats"><div class="stat"><span class="small">Drill level</span><b id="drillLv">0</b></div><div class="stat"><span class="small">Camp level</span><b id="campLv">0</b></div><div class="stat"><span class="small">Roster</span><b id="rosterCount">0</b></div></div>
+ <div class="actions"><button id="saveBtn" class="ghost">Save game</button><button id="resetBtn" class="ghost">Reset</button></div>
+</aside>
+</main>
+<footer>Prototype v0.1 · Original world, characters and systems · Progress saves in this browser</footer>
+</div>
+<script>
+const templates=[
+ {name:"Bram Ironroot",role:"Vanguard",icon:"🛡️",hp:145,atk:13,desc:"Steadfast frontliner"},
+ {name:"Liora Windstep",role:"Ranger",icon:"🏹",hp:88,atk:23,desc:"Precise ranged damage"},
+ {name:"Nym Ashweaver",role:"Arcanist",icon:"🔮",hp:76,atk:29,desc:"Unstable arcane force"},
+ {name:"Sister Elowen",role:"Warden",icon:"🌿",hp:112,atk:12,desc:"Keeps allies standing"},
+ {name:"Kestrel Vane",role:"Duelist",icon:"🗡️",hp:98,atk:21,desc:"Fast single-target strikes"},
+ {name:"Orik Stonehand",role:"Bulwark",icon:"⚒️",hp:170,atk:10,desc:"Absorbs punishment"},
+ {name:"Mira Starling",role:"Mystic",icon:"✨",hp:91,atk:20,desc:"Aether-charged support"},
+ {name:"Fen Holloway",role:"Beastcaller",icon:"🐺",hp:105,atk:18,desc:"Fights beside a spirit beast"}
+];
+const enemies=["Gloamling","Shard Hound","Hollow Sentinel","Rift Cultist","Aether Wraith","Spire Stalker","Obsidian Brute","Fallen Knight"];
+const enemyIcons=["👁️","🐺","🗿","🧙","👻","🦇","🪨","⚔️"];
+let state;
+function fresh(){return {gold:120,aether:0,floor:1,wins:0,best:1,drill:0,fort:0,team:[0,1,2],roster:[0,1,2,3],lastWin:false,offers:[4,5,6]};}
+function load(){try{let s=JSON.parse(localStorage.getItem("aetherfall-save"));return s&&s.roster?{...fresh(),...s}:fresh()}catch{return fresh()}}
+state=load();
+const $=id=>document.getElementById(id);
+function merc(id){let t=templates[id];return {...t,id,hp:t.hp+state.fort*10,atk:t.atk+state.drill*2}}
+function power(){return state.team.reduce((n,id)=>{let m=merc(id);return n+m.atk+m.hp*.12},0)}
+function update(){
+ $("gold").textContent=state.gold;$("aether").textContent=state.aether;$("floor").textContent=state.floor;$("wins").textContent=state.wins;$("best").textContent=state.best;$("power").textContent=Math.round(power());$("drillLv").textContent=state.drill;$("campLv").textContent=state.fort;$("rosterCount").textContent=state.roster.length;
+ $("trainCost").textContent=35+state.drill*30;$("fortCost").textContent=35+state.fort*30;
+ $("team").innerHTML=state.team.map(id=>unitCard(id,true)).join("");
+ $("roster").innerHTML=state.roster.map(id=>unitCard(id,false)).join("");
+ $("recruitBtn").disabled=state.gold<60||state.roster.length>=templates.length;
+ $("trainBtn").disabled=state.gold<35+state.drill*30;$("fortifyBtn").disabled=state.gold<35+state.fort*30;$("convertBtn").disabled=state.aether<10;
+ $("battleBtn").disabled=state.team.length===0;
+ $("nextBtn").disabled=!state.lastWin;
+}
+function unitCard(id,team){let m=merc(id),sel=state.team.includes(id);return `<div class="unit"><div class="portrait">${m.icon}</div><h3>${m.name}</h3><div class="role">${m.role}</div><div class="meta">HP ${m.hp} · ATK ${m.atk}<br>${m.desc}</div>${team?`<button class="pick" title="Remove from team" onclick="removeTeam(${id})">−</button>`:`<button class="pick" title="Add to team" onclick="toggleTeam(${id})">${sel?"✓":"+"}</button>`}</div>`}
+function toggleTeam(id){if(state.team.includes(id)){removeTeam(id);return}if(state.team.length>=3){$("battleNotice").textContent="Your expedition party can have up to 3 mercenaries.";return}state.team.push(id);update();save(false)}
+function removeTeam(id){state.team=state.team.filter(x=>x!==id);update();save(false)}
+function save(show=true){localStorage.setItem("aetherfall-save",JSON.stringify(state));if(show)log("Game saved in this browser.");}
+function log(s){let el=$("log");el.innerHTML+=`<div>${s}</div>`;el.scrollTop=el.scrollHeight}
+function showBattle(allies,enemiesArr){$("allyBattle").innerHTML=allies.map(x=>fighter(x)).join("");$("enemyBattle").innerHTML=enemiesArr.map(x=>fighter(x,true)).join("")}
+function fighter(m,bad=false){return `<div class="fighter"><span class="face">${m.icon}</span><div style="flex:1;min-width:0"><b>${m.name}</b><div class="hp"><i style="width:${Math.max(0,m.hp/m.max*100)}%;background:${bad?"var(--red)":"var(--green)"}"></i></div></div></div>`}
+function beginBattle(){
+ if(!state.team.length)return;
+ state.lastWin=false;update();$("nextBtn").disabled=true;$("battleNotice").textContent="The clash is underway…";
+ let allies=state.team.map(id=>({...merc(id),max:merc(id).hp}));
+ let eCount=Math.min(3,1+Math.floor((state.floor-1)/4));
+ let foes=Array.from({length:eCount},(_,i)=>{let hp=42+state.floor*13,atk=7+state.floor*2;return {name:enemies[(state.floor+i-1)%enemies.length],icon:enemyIcons[(state.floor+i-1)%enemyIcons.length],hp,max:hp,atk}});
+ $("log").innerHTML=`<div>— Floor ${state.floor}: the company enters the breach —</div>`;
+ showBattle(allies,foes);
+ let round=0;
+ while(allies.some(a=>a.hp>0)&&foes.some(e=>e.hp>0)&&round<30){
+  round++;
+  for(let a of allies.filter(x=>x.hp>0)){let target=foes.find(x=>x.hp>0);if(!target)break;let dmg=a.atk+Math.floor(Math.random()*7);target.hp-=dmg;log(`${a.name} strikes ${target.name} for ${dmg}.`);if(target.hp<=0)log(`${target.name} is defeated.`)}
+  for(let e of foes.filter(x=>x.hp>0)){let target=allies.filter(x=>x.hp>0).sort((a,b)=>a.hp-b.hp)[0];if(!target)break;let dmg=e.atk+Math.floor(Math.random()*5);target.hp-=dmg;log(`${e.name} hits ${target.name} for ${dmg}.`)}
+ }
+ showBattle(allies,foes);
+ if(allies.some(a=>a.hp>0)&&foes.every(e=>e.hp<=0)){
+  let g=25+state.floor*9,ae=3+Math.floor(state.floor/3);state.gold+=g;state.aether+=ae;state.wins++;state.best=Math.max(state.best,state.floor);state.lastWin=true;
+  $("battleNotice").textContent=`Victory! You earned ${g} Crowns and ${ae} Aether. Continue when ready.`;log(`VICTORY · +${g} Crowns · +${ae} Aether.`);
+ }else{$("battleNotice").textContent="The company was driven back. Strengthen your team and try again.";log("DEFEAT · No rewards this time.");}
+ update();save(false);
+}
+$("battleBtn").onclick=beginBattle;
+$("nextBtn").onclick=()=>{if(state.lastWin){state.floor++;state.lastWin=false;update();beginBattle()}};
+$("recruitBtn").onclick=()=>{if(state.gold<60||state.roster.length>=templates.length)return;let pool=templates.map((_,i)=>i).filter(i=>!state.roster.includes(i));let id=pool[Math.floor(Math.random()*pool.length)];state.gold-=60;state.roster.push(id);log(`${templates[id].name} joined your company.`);update();save(false)};
+$("refreshBtn").onclick=()=>{if(state.gold<15)return;state.gold-=15;log("The recruitment board has been refreshed. New offers arrive soon.");update();save(false)};
+$("trainBtn").onclick=()=>{let c=35+state.drill*30;if(state.gold<c)return;state.gold-=c;state.drill++;log("Weapon drills improved. All mercenaries gain +2 ATK.");update();save(false)};
+$("fortifyBtn").onclick=()=>{let c=35+state.fort*30;if(state.gold<c)return;state.gold-=c;state.fort++;log("The camp is fortified. All mercenaries gain +10 HP.");update();save(false)};
+$("convertBtn").onclick=()=>{if(state.aether<10)return;state.aether-=10;state.gold+=50;log("10 Aether traded for 50 Crowns.");update();save(false)};
+$("saveBtn").onclick=()=>save(true);
+$("resetBtn").onclick=()=>{if(confirm("Reset all Aetherfall progress? This cannot be undone.")){state=fresh();$("log").innerHTML="<div>A new expedition begins.</div>";showBattle([],[]);update();save(false)}};
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{document.querySelectorAll("nav button").forEach(x=>x.classList.toggle("active",x===b));["expedition","mercenaries","camp"].forEach(id=>$(id).classList.toggle("hidden",id!==b.dataset.tab));});
+update();showBattle([],[]);
+</script>
+</body></html>
